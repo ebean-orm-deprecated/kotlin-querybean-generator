@@ -4,7 +4,6 @@ import io.ebean.annotation.DbArray;
 import io.ebean.annotation.DbJson;
 import io.ebean.annotation.DbJsonB;
 
-import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -21,8 +20,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -31,11 +28,9 @@ import java.util.Set;
 /**
  * Context for the source generation.
  */
-public class ProcessingContext {
+class ProcessingContext {
 
   private final Types typeUtils;
-
-  private final Filer filer;
 
   private final Messager messager;
 
@@ -46,16 +41,15 @@ public class ProcessingContext {
    */
   private final Set<String> packages = new LinkedHashSet<>();
 
-  public ProcessingContext(ProcessingEnvironment processingEnv) {
+  ProcessingContext(ProcessingEnvironment processingEnv) {
     this.typeUtils = processingEnv.getTypeUtils();
-    this.filer = processingEnv.getFiler();
     this.messager = processingEnv.getMessager();
   }
 
   /**
    * Gather all the fields (properties) for the given bean element.
    */
-  public List<VariableElement> allFields(Element element) {
+  List<VariableElement> allFields(Element element) {
 
     List<VariableElement> list = new ArrayList<>();
     gatherProperties(list, element);
@@ -65,7 +59,7 @@ public class ProcessingContext {
   /**
    * Recursively gather all the fields (properties) for the given bean element.
    */
-  protected void gatherProperties(List<VariableElement> fields, Element element) {
+  private void gatherProperties(List<VariableElement> fields, Element element) {
 
     TypeElement typeElement = (TypeElement) element;
     TypeMirror superclass = typeElement.getSuperclass();
@@ -111,7 +105,7 @@ public class ProcessingContext {
   /**
    * Return true if it is a DbJson field.
    */
-  public static boolean dbJsonField(Element field) {
+  private static boolean dbJsonField(Element field) {
     return (field.getAnnotation(DbJson.class) != null
         || field.getAnnotation(DbJsonB.class) != null);
   }
@@ -119,11 +113,11 @@ public class ProcessingContext {
   /**
    * Return true if it is a DbArray field.
    */
-  public static boolean dbArrayField(Element field) {
+  private static boolean dbArrayField(Element field) {
     return (field.getAnnotation(DbArray.class) != null);
   }
 
-  public PropertyType getPropertyType(VariableElement field) {
+  PropertyType getPropertyType(VariableElement field) {
 
     TypeMirror typeMirror = field.asType();
 
@@ -201,31 +195,31 @@ public class ProcessingContext {
     }
   }
 
-  /**
-   * Create a file writer for the given class name.
-   */
-  public JavaFileObject createWriter(String factoryClassName, Element originatingElement) throws IOException {
-    return filer.createSourceFile(factoryClassName, originatingElement);
-  }
+//  /**
+//   * Create a file writer for the given class name.
+//   */
+//  public JavaFileObject createWriter(String factoryClassName, Element originatingElement) throws IOException {
+//    return filer.createSourceFile(factoryClassName, originatingElement);
+//  }
 
   /**
    * Log an error message.
    */
-  public void logError(Element e, String msg, Object... args) {
+  void logError(Element e, String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.ERROR, String.format(msg, args), e);
   }
 
   /**
    * Log a info message.
    */
-  public void logNote(String msg, Object... args) {
+  void logNote(String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
   }
 
   /**
    * Add a package that a query bean is generated into.
    */
-  public void addPackage(String destPackage) {
+  void addPackage(String destPackage) {
     packages.add(destPackage);
   }
 

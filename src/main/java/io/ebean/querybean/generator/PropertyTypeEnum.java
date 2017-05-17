@@ -12,7 +12,7 @@ public class PropertyTypeEnum extends PropertyType {
 
   private final String enumShortName;
 
-  public PropertyTypeEnum(String enumClass, String enumShortName) {
+  PropertyTypeEnum(String enumClass, String enumShortName) {
     super("PEnum");
     this.enumClass = enumClass;
     this.enumShortName = enumShortName;

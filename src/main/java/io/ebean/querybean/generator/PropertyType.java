@@ -1,7 +1,5 @@
 package io.ebean.querybean.generator;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Set;
 
 /**
@@ -9,17 +7,17 @@ import java.util.Set;
  */
 public class PropertyType {
 
-  public static final String NEWLINE = SimpleQueryBeanWriter.NEWLINE;
+  static final String NEWLINE = SimpleQueryBeanWriter.NEWLINE;
 
   /**
    * The property type className or primitive short name.
    */
-  protected final String propertyType;
+  final String propertyType;
 
   /**
    * Construct with a className of primitive name for the type.
    */
-  public PropertyType(String propertyType) {
+  PropertyType(String propertyType) {
     this.propertyType = propertyType;
   }
 
@@ -56,24 +54,24 @@ public class PropertyType {
     allImports.add("io.ebean.typequery." + propertyType);
   }
 
-  /**
-   * Write the constructor source code.
-   *
-   * @param writer The writer java source code is written to
-   * @param name   the property name
-   * @param assoc  if true the property is on an a associated bean (not at root level)
-   */
-  public void writeConstructor(Writer writer, String name, boolean assoc) throws IOException {
-
-    //PLong<>("id", this);
-    //PLong<>("id", root, path);
-
-    writer.append(propertyType).append("<>(\"").append(name).append("\"");
-    if (assoc) {
-      writer.append(", root, path);").append(NEWLINE);
-
-    } else {
-      writer.append(", this);").append(NEWLINE);
-    }
-  }
+//  /**
+//   * Write the constructor source code.
+//   *
+//   * @param writer The writer java source code is written to
+//   * @param name   the property name
+//   * @param assoc  if true the property is on an a associated bean (not at root level)
+//   */
+//  public void writeConstructor(Writer writer, String name, boolean assoc) throws IOException {
+//
+//    //PLong<>("id", this);
+//    //PLong<>("id", root, path);
+//
+//    writer.append(propertyType).append("<>(\"").append(name).append("\"");
+//    if (assoc) {
+//      writer.append(", root, path);").append(NEWLINE);
+//
+//    } else {
+//      writer.append(", this);").append(NEWLINE);
+//    }
+//  }
 }

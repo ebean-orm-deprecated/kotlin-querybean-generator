@@ -8,9 +8,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import java.io.File;
-import java.net.URI;
-import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 

@@ -12,7 +12,7 @@ public class PropertyTypeArray extends PropertyType {
 
   private final String elementShortName;
 
-  public PropertyTypeArray(String elementClass, String elementShortName) {
+  PropertyTypeArray(String elementClass, String elementShortName) {
     super("PArray");
     this.elementClass = elementClass;
     this.elementShortName = elementShortName;

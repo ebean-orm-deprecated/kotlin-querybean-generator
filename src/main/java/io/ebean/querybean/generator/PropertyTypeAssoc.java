@@ -1,7 +1,5 @@
 package io.ebean.querybean.generator;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Set;
 
 /**
@@ -20,7 +18,7 @@ public class PropertyTypeAssoc extends PropertyType {
    * @param qAssocTypeName the associated bean type name.
    * @param assocPackage   the associated bean package.
    */
-  public PropertyTypeAssoc(String qAssocTypeName, String assocPackage) {
+  PropertyTypeAssoc(String qAssocTypeName, String assocPackage) {
     super(qAssocTypeName);
     this.assocPackage = assocPackage;
   }
@@ -41,20 +39,20 @@ public class PropertyTypeAssoc extends PropertyType {
     allImports.add(assocPackage + "." + propertyType);
   }
 
-  /**
-   * Write the constructor source code to writer.
-   */
-  @Override
-  public void writeConstructor(Writer writer, String name, boolean assoc) throws IOException {
-
-    writer.append(propertyType).append("<>(\"").append(name).append("\"");
-    if (assoc) {
-      //this.notes = new QAssocContactNote<>("notes", root, path, depth);
-      writer.append(", root, path, depth);").append(NEWLINE);
-
-    } else {
-      // root level
-      writer.append(", this, ").append("maxDepth);").append(NEWLINE);
-    }
-  }
+//  /**
+//   * Write the constructor source code to writer.
+//   */
+//  @Override
+//  public void writeConstructor(Writer writer, String name, boolean assoc) throws IOException {
+//
+//    writer.append(propertyType).append("<>(\"").append(name).append("\"");
+//    if (assoc) {
+//      //this.notes = new QAssocContactNote<>("notes", root, path, depth);
+//      writer.append(", root, path, depth);").append(NEWLINE);
+//
+//    } else {
+//      // root level
+//      writer.append(", this, ").append("maxDepth);").append(NEWLINE);
+//    }
+//  }
 }
