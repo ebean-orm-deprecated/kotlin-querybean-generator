@@ -30,6 +30,8 @@ import java.util.Set;
  */
 class ProcessingContext {
 
+  private final String generatedSources;
+
   private final Types typeUtils;
 
   private final Messager messager;
@@ -41,9 +43,17 @@ class ProcessingContext {
    */
   private final Set<String> packages = new LinkedHashSet<>();
 
-  ProcessingContext(ProcessingEnvironment processingEnv) {
+  ProcessingContext(ProcessingEnvironment processingEnv, String generatedSources) {
+    this.generatedSources = generatedSources;
     this.typeUtils = processingEnv.getTypeUtils();
     this.messager = processingEnv.getMessager();
+  }
+
+  /**
+   * Return the base directory to put the kotlin generated source.
+   */
+  String generatedSourcesDir() {
+    return generatedSources;
   }
 
   /**
@@ -99,7 +109,7 @@ class ProcessingContext {
 
   private boolean isEntityOrEmbedded(Element mappedSuper) {
     return mappedSuper.getAnnotation(Entity.class) != null
-        || mappedSuper.getAnnotation(Embeddable.class) != null;
+      || mappedSuper.getAnnotation(Embeddable.class) != null;
   }
 
   /**
@@ -107,7 +117,7 @@ class ProcessingContext {
    */
   private static boolean dbJsonField(Element field) {
     return (field.getAnnotation(DbJson.class) != null
-        || field.getAnnotation(DbJsonB.class) != null);
+      || field.getAnnotation(DbJsonB.class) != null);
   }
 
   /**
@@ -123,14 +133,14 @@ class ProcessingContext {
 
     TypeMirror currentType = typeMirror;
     while (currentType != null) {
-    	PropertyType type = propertyTypeMap.getType(currentType.toString());
-        if (type != null) {
-          // simple scalar type
-          return type;
-        }
-        // go up in class hierarchy
-        TypeElement fieldType = (TypeElement) typeUtils.asElement(currentType);
-        currentType = (fieldType == null) ? null : fieldType.getSuperclass();
+      PropertyType type = propertyTypeMap.getType(currentType.toString());
+      if (type != null) {
+        // simple scalar type
+        return type;
+      }
+      // go up in class hierarchy
+      TypeElement fieldType = (TypeElement) typeUtils.asElement(currentType);
+      currentType = (fieldType == null) ? null : fieldType.getSuperclass();
     }
 
     if (dbJsonField(field)) {
@@ -139,7 +149,7 @@ class ProcessingContext {
 
     if (dbArrayField(field)) {
       // get generic parameter type
-      DeclaredType declaredType = (DeclaredType)typeMirror;
+      DeclaredType declaredType = (DeclaredType) typeMirror;
       String fullType = declaredType.getTypeArguments().get(0).toString();
       return new PropertyTypeArray(fullType, Split.shortName(fullType));
     }
@@ -194,13 +204,6 @@ class ProcessingContext {
       return origPackage + "." + suffix;
     }
   }
-
-//  /**
-//   * Create a file writer for the given class name.
-//   */
-//  public JavaFileObject createWriter(String factoryClassName, Element originatingElement) throws IOException {
-//    return filer.createSourceFile(factoryClassName, originatingElement);
-//  }
 
   /**
    * Log an error message.

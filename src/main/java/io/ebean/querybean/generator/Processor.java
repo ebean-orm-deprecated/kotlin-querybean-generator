@@ -3,28 +3,46 @@ package io.ebean.querybean.generator;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
+import javax.tools.Diagnostic;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
  * Process compiled entity beans and generates 'query beans' for them.
  */
+@SupportedOptions(value = {"kapt.kotlin.generated"})
 public class Processor extends AbstractProcessor {
 
-  private ProcessingContext processingContext;
+  private static final String SUFFIX_OPTION = "suffix";
+  private static final String GENERATE_KOTLIN_CODE_OPTION = "generate.kotlin.code";
+  private static final String GENERATE_ERROR = "generate.error";
+  private static final String KAPT_KOTLIN_GENERATED_OPTION = "kapt.kotlin.generated";
 
   public Processor() {
   }
 
   @Override
+  public Set<String> getSupportedOptions() {
+
+    processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "getSupportedOptions() ........ ");
+
+    Set<String> options =  new LinkedHashSet<>();
+    options.add(KAPT_KOTLIN_GENERATED_OPTION);
+    options.add(SUFFIX_OPTION);
+    options.add(GENERATE_KOTLIN_CODE_OPTION);
+    options.add(GENERATE_ERROR);
+    return options;
+  }
+
+  @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
-    this.processingContext = new ProcessingContext(processingEnv);
   }
 
   @Override
@@ -47,31 +65,39 @@ public class Processor extends AbstractProcessor {
     int entityCount = 0;
     int embeddableCount = 0;
 
+    processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "options[" + processingEnv.getOptions() + "]");
+
+    String generatedDir = processingEnv.getOptions().get("kapt.kotlin.generated");
+    if (generatedDir == null) {
+      generatedDir = "target/generated-sources/kapt/compile";
+    }
+
+    ProcessingContext context = new ProcessingContext(processingEnv, generatedDir);
+
     for (Element element : roundEnv.getElementsAnnotatedWith(Entity.class)) {
-      generateQueryBeans(element);
+      generateQueryBeans(context, element);
       entityCount++;
     }
 
     for (Element element : roundEnv.getElementsAnnotatedWith(Embeddable.class)) {
-      generateQueryBeans(element);
+      generateQueryBeans(context, element);
       embeddableCount++;
     }
 
     if (entityCount > 0 || embeddableCount > 0) {
-      processingContext.logNote("Generated query beans for [" + entityCount + "] entities [" + embeddableCount + "] embeddable");
+      context.logNote("Generated query beans for [" + entityCount + "] entities [" + embeddableCount + "] embeddable");
     }
 
     return true;
   }
 
-  private void generateQueryBeans(Element element) {
+  private void generateQueryBeans(ProcessingContext context, Element element) {
     try {
-      SimpleQueryBeanWriter beanWriter = new SimpleQueryBeanWriter((TypeElement)element, processingContext);
+      SimpleQueryBeanWriter beanWriter = new SimpleQueryBeanWriter((TypeElement) element, context);
       beanWriter.writeRootBean();
       beanWriter.writeAssocBean();
-
-    } catch (Exception e) { // catch also runtime-exceptions here
-      processingContext.logError(element, "Error generating query beans: " + e);
+    } catch (Exception e) {
+      context.logError(element, "Error generating query beans: " + e);
     }
   }
 }

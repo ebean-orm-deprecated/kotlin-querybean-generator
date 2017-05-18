@@ -32,6 +32,7 @@ class SimpleQueryBeanWriter {
   private final String beanFullName;
   private final LangAdapter langAdapter;
   private boolean writingAssocBean;
+  private final String generatedSourcesDir;
 
   private String destPackage;
   private String origDestPackage;
@@ -40,12 +41,10 @@ class SimpleQueryBeanWriter {
   private String origShortName;
 
   private Writer writer;
-  private final String baseDir;
 
   SimpleQueryBeanWriter(TypeElement element, ProcessingContext processingContext) {
     this.langAdapter = new KotlinLangAdapter();
-    this.baseDir = "target/generated-sources/kapt/compile";
-
+    this.generatedSourcesDir = processingContext.generatedSourcesDir();
     this.element = element;
     this.processingContext = processingContext;
 
@@ -289,15 +288,13 @@ class SimpleQueryBeanWriter {
 
     String relPath = destPackage.replace('.', '/');
 
-    File absDir = new File(baseDir, relPath);
-    if (!absDir.mkdirs()) {
+    File absDir = new File(generatedSourcesDir, relPath);
+    if (!absDir.exists() && !absDir.mkdirs()) {
       processingContext.logNote("failed to create directories for:" + absDir.getAbsolutePath());
     }
 
     String fullPath = relPath + "/Q" + shortName + ".kt";
-    //processingContext.logNote("base:" + baseDir + " path:" + fullPath);
-
-    File absFile = new File(baseDir, fullPath);
+    File absFile = new File(generatedSourcesDir, fullPath);
     return new FileWriter(absFile);
   }
 
