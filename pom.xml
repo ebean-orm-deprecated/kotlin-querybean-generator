@@ -23,6 +23,7 @@
       <groupId>io.ebean</groupId>
       <artifactId>ebean-querybean</artifactId>
       <version>10.1.1</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Look for DbJson annotations -->
