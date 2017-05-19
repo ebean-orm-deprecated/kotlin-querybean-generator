@@ -3,25 +3,20 @@ package io.ebean.querybean.generator;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import javax.tools.Diagnostic;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
  * Process compiled entity beans and generates 'query beans' for them.
  */
-@SupportedOptions(value = {"kapt.kotlin.generated"})
 public class Processor extends AbstractProcessor {
 
-  private static final String SUFFIX_OPTION = "suffix";
   private static final String GENERATE_KOTLIN_CODE_OPTION = "generate.kotlin.code";
-  private static final String GENERATE_ERROR = "generate.error";
   private static final String KAPT_KOTLIN_GENERATED_OPTION = "kapt.kotlin.generated";
 
   public Processor() {
@@ -30,13 +25,9 @@ public class Processor extends AbstractProcessor {
   @Override
   public Set<String> getSupportedOptions() {
 
-    processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "getSupportedOptions() ........ ");
-
     Set<String> options =  new LinkedHashSet<>();
     options.add(KAPT_KOTLIN_GENERATED_OPTION);
-    options.add(SUFFIX_OPTION);
     options.add(GENERATE_KOTLIN_CODE_OPTION);
-    options.add(GENERATE_ERROR);
     return options;
   }
 
@@ -65,7 +56,7 @@ public class Processor extends AbstractProcessor {
     int entityCount = 0;
     int embeddableCount = 0;
 
-    processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "options[" + processingEnv.getOptions() + "]");
+    //processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "options[" + processingEnv.getOptions() + "]");
 
     String generatedDir = processingEnv.getOptions().get("kapt.kotlin.generated");
     if (generatedDir == null) {
