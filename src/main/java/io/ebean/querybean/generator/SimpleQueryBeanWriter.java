@@ -19,6 +19,30 @@ import java.util.TreeSet;
  */
 class SimpleQueryBeanWriter {
 
+  private static final String[] javaTypes = {
+    "java.lang.String",
+    "java.lang.Integer",
+    "java.lang.Long",
+    "java.lang.Double",
+    "java.lang.Float",
+    "java.lang.Short",
+    "java.lang.Boolean",
+    "java.lang.Byte",
+    "java.lang.Char"
+  };
+
+  private static final String[] kotlinTypes = {
+    "kotlin.String",
+    "kotlin.Int",
+    "kotlin.Long",
+    "kotlin.Double",
+    "kotlin.Float",
+    "kotlin.Short",
+    "kotlin.Boolean",
+    "kotlin.Byte",
+    "kotlin.Char"
+  };
+
   static final String NEWLINE = "\n";
 
   private final Set<String> importTypes = new TreeSet<>();
@@ -98,6 +122,8 @@ class SimpleQueryBeanWriter {
     if (isEntity()) {
       writer = createFileWriter();
 
+      translateKotlinImportTypes();
+
       writePackage();
       writeImports();
       writeClass();
@@ -109,6 +135,17 @@ class SimpleQueryBeanWriter {
 
       writer.flush();
       writer.close();
+    }
+  }
+
+  /**
+   * Translate the base types (String, Integer etc) to Kotlin types.
+   */
+  private void translateKotlinImportTypes() {
+    for (int i = 0; i < javaTypes.length; i++) {
+      if (importTypes.remove(javaTypes[i])) {
+        importTypes.add(kotlinTypes[i]);
+      }
     }
   }
 
