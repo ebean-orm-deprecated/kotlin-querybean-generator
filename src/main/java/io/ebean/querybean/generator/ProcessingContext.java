@@ -58,6 +58,26 @@ class ProcessingContext {
   }
 
   /**
+   * Escape the type (e.g. java.lang.String) from the TypeMirror toString().
+   */
+  private String typeDef(TypeMirror typeMirror) {
+    return typeDef(typeMirror.toString());
+  }
+
+  /**
+   * Escape the type (e.g. java.lang.String) from the TypeMirror toString().
+   */
+  private static String typeDef(String typeDesc) {
+
+    int pos = typeDesc.lastIndexOf(" :: ");
+    if (pos > -1) {
+      // (@javax.validation.constraints.Size(min=1, max=10) :: java.lang.String)
+      typeDesc = typeDesc.substring(pos + 4, typeDesc.length() - 1);
+    }
+    return typeDesc;
+  }
+
+  /**
    * Gather all the fields (properties) for the given bean element.
    */
   List<VariableElement> allFields(Element element) {
@@ -135,7 +155,7 @@ class ProcessingContext {
 
     TypeMirror currentType = typeMirror;
     while (currentType != null) {
-      PropertyType type = propertyTypeMap.getType(currentType.toString());
+      PropertyType type = propertyTypeMap.getType(typeDef(currentType));
       if (type != null) {
         // simple scalar type
         return type;
@@ -152,7 +172,7 @@ class ProcessingContext {
     if (dbArrayField(field)) {
       // get generic parameter type
       DeclaredType declaredType = (DeclaredType) typeMirror;
-      String fullType = declaredType.getTypeArguments().get(0).toString();
+      String fullType = typeDef(declaredType.getTypeArguments().get(0));
       return new PropertyTypeArray(fullType, Split.shortName(fullType));
     }
 
@@ -160,13 +180,13 @@ class ProcessingContext {
 
     if (fieldType != null) {
       if (fieldType.getKind() == ElementKind.ENUM) {
-        String fullType = typeMirror.toString();
+        String fullType = typeDef(typeMirror);
         return new PropertyTypeEnum(fullType, Split.shortName(fullType));
       }
 
       if (isEntityOrEmbedded(fieldType)) {
         //  public QAssocContact<QCustomer> contacts;
-        return createPropertyTypeAssoc(typeMirror.toString());
+        return createPropertyTypeAssoc(typeDef(typeMirror));
       }
 
       if (typeMirror.getKind() == TypeKind.DECLARED) {
@@ -176,7 +196,7 @@ class ProcessingContext {
           TypeMirror argType = typeArguments.get(0);
           Element argElement = typeUtils.asElement(argType);
           if (isEntityOrEmbedded(argElement)) {
-            return createPropertyTypeAssoc(argElement.asType().toString());
+            return createPropertyTypeAssoc(typeDef(argElement.asType()));
           }
         }
       }
