@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static io.ebean.querybean.generator.Constants.AT_GENERATED;
+import static io.ebean.querybean.generator.Constants.AT_TYPEQUERYBEAN;
+
 /**
  * A simple implementation that generates and writes query beans.
  */
@@ -264,7 +267,8 @@ class SimpleQueryBeanWriter {
       writer.append(" * THIS IS A GENERATED OBJECT, DO NOT MODIFY THIS CLASS.").append(NEWLINE);
       writer.append(" */").append(NEWLINE);
       //public class QAssocContact<R>
-      writer.append("@TypeQueryBean").append(NEWLINE);
+      writer.append(AT_GENERATED).append(NEWLINE);
+      writer.append(AT_TYPEQUERYBEAN).append(NEWLINE);
       lang().beginAssocClass(writer, shortName, origShortName);
 
     } else {
@@ -274,7 +278,8 @@ class SimpleQueryBeanWriter {
       writer.append(" * THIS IS A GENERATED OBJECT, DO NOT MODIFY THIS CLASS.").append(NEWLINE);
       writer.append(" */").append(NEWLINE);
       //  public class QContact extends TQRootBean<Contact,QContact> {
-      writer.append("@TypeQueryBean").append(NEWLINE);
+      writer.append(AT_GENERATED).append(NEWLINE);
+      writer.append(AT_TYPEQUERYBEAN).append(NEWLINE);
       lang().beginClass(writer, shortName);
     }
 
