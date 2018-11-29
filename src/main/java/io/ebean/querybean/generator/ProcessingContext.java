@@ -174,7 +174,8 @@ class ProcessingContext {
       // get generic parameter type
       DeclaredType declaredType = (DeclaredType) typeMirror;
       String fullType = typeDef(declaredType.getTypeArguments().get(0));
-      return new PropertyTypeArray(fullType, Split.shortName(fullType));
+      String shortName = langShortType(Split.shortName(fullType));
+      return new PropertyTypeArray(fullType, shortName);
     }
 
     Element fieldType = typeUtils.asElement(typeMirror);
@@ -204,6 +205,13 @@ class ProcessingContext {
     }
 
     return null;
+  }
+
+  private String langShortType(String shortName) {
+    if ("Integer".equals(shortName)) {
+      return "Int";
+    }
+    return shortName;
   }
 
   /**
