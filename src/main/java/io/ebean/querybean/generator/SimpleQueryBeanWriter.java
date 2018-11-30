@@ -89,6 +89,7 @@ class SimpleQueryBeanWriter {
   private void gatherPropertyDetails() {
 
     importTypes.add(beanFullName);
+    importTypes.add("javax.annotation.Generated");
     importTypes.add("io.ebean.typequery.TQRootBean");
     importTypes.add("io.ebean.typequery.TypeQueryBean");
     importTypes.add("io.ebean.EbeanServer");
