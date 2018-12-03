@@ -15,6 +15,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import static io.ebean.querybean.generator.Constants.GENERATED;
 
 /**
  * Context for the source generation.
@@ -37,6 +40,10 @@ class ProcessingContext {
 
   private final Messager messager;
 
+  private final Elements elementUtils;
+
+  private final boolean generatedAvailable;
+
   private final PropertyTypeMap propertyTypeMap = new PropertyTypeMap();
 
   /**
@@ -48,6 +55,12 @@ class ProcessingContext {
     this.generatedSources = generatedSources;
     this.typeUtils = processingEnv.getTypeUtils();
     this.messager = processingEnv.getMessager();
+    this.elementUtils = processingEnv.getElementUtils();
+    this.generatedAvailable = isTypeAvailable(GENERATED);
+  }
+
+  private boolean isTypeAvailable(String canonicalName) {
+    return null != elementUtils.getTypeElement(canonicalName);
   }
 
   /**
@@ -257,4 +270,10 @@ class ProcessingContext {
     packages.add(destPackage);
   }
 
+  /**
+   * Return true if javax.annotation.Generated is available in the claspath.
+   */
+  boolean isGeneratedAvailable() {
+    return generatedAvailable;
+  }
 }
