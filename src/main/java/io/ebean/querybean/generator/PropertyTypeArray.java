@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * Array property type.
  */
-public class PropertyTypeArray extends PropertyType {
+class PropertyTypeArray extends PropertyType {
 
   private final String elementClass;
 
@@ -19,7 +19,7 @@ public class PropertyTypeArray extends PropertyType {
   }
 
   @Override
-  public String getTypeDefn(String shortName, boolean assoc) {
+  String getTypeDefn(String shortName, boolean assoc) {
     if (assoc) {
       return "PArray<R," + elementShortName + ">";
 
@@ -29,7 +29,7 @@ public class PropertyTypeArray extends PropertyType {
   }
 
   @Override
-  public void addImports(Set<String> allImports) {
+  void addImports(Set<String> allImports) {
     super.addImports(allImports);
     allImports.add(elementClass);
   }

@@ -46,11 +46,6 @@ class ProcessingContext {
 
   private final PropertyTypeMap propertyTypeMap = new PropertyTypeMap();
 
-  /**
-   * The set of packages that query beans are generated into.
-   */
-  private final Set<String> packages = new LinkedHashSet<>();
-
   ProcessingContext(ProcessingEnvironment processingEnv, String generatedSources) {
     this.generatedSources = generatedSources;
     this.typeUtils = processingEnv.getTypeUtils();
@@ -261,13 +256,6 @@ class ProcessingContext {
    */
   void logNote(String msg, Object... args) {
     messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
-  }
-
-  /**
-   * Add a package that a query bean is generated into.
-   */
-  void addPackage(String destPackage) {
-    packages.add(destPackage);
   }
 
   /**

@@ -21,14 +21,4 @@ public interface LangAdapter {
 
   void fieldDefn(Writer writer, String propertyName, String typeDefn) throws IOException;
 
-//  void finderConstructors(Writer writer, String shortName) throws IOException;
-//
-//  void finderWhere(Writer writer, String shortName, String modifier) throws IOException;
-//
-//  void finderText(Writer writer, String shortName, String modifier) throws IOException;
-//
-//  void finderClass(Writer writer, String shortName, String idTypeShortName) throws IOException;
-//
-//  String finderDefn(String shortName);
-
 }

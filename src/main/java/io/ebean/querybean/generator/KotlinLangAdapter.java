@@ -3,7 +3,7 @@ package io.ebean.querybean.generator;
 import java.io.IOException;
 import java.io.Writer;
 
-public class KotlinLangAdapter implements LangAdapter {
+class KotlinLangAdapter implements LangAdapter {
 
   @Override
   public void beginClass(Writer writer, String shortName) throws IOException {

@@ -82,8 +82,6 @@ class SimpleQueryBeanWriter {
     this.beanFullName = element.getQualifiedName().toString();
     this.destPackage = derivePackage(beanFullName) + ".query";
     this.shortName = deriveShortName(beanFullName);
-
-    processingContext.addPackage(destPackage);
   }
 
   private LangAdapter lang() {
@@ -302,21 +300,6 @@ class SimpleQueryBeanWriter {
       lang().alias(writer, shortName);
     }
   }
-
-//  private void writeStaticAliasClass() throws IOException {
-//
-//    writer.append(NEWLINE);
-//    writer.append("  /**").append(NEWLINE);
-//    writer.append("   * Provides static properties to use in <em> select() and fetch() </em>").append(NEWLINE);
-//    writer.append("   * clauses of a query. Typically referenced via static imports. ").append(NEWLINE);
-//    writer.append("   */").append(NEWLINE);
-//    writer.append("  public static class Alias {").append(NEWLINE);
-//    for (PropertyMeta property : properties) {
-//      property.writeFieldAliasDefn(writer, shortName);
-//      writer.append(NEWLINE);
-//    }
-//    writer.append("  }").append(NEWLINE);
-//  }
 
   private void writeClassEnd() throws IOException {
     writer.append("}").append(NEWLINE);
