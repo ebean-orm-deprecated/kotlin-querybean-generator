@@ -7,8 +7,6 @@ import java.util.Set;
  */
 class PropertyType {
 
-  static final String NEWLINE = SimpleQueryBeanWriter.NEWLINE;
-
   /**
    * The property type className or primitive short name.
    */

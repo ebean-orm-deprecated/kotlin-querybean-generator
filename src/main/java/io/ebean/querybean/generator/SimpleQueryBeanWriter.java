@@ -50,8 +50,6 @@ class SimpleQueryBeanWriter {
     "kotlin.Char"
   };
 
-  static final String NEWLINE = "\n";
-
   private final Set<String> importTypes = new TreeSet<>();
 
   private final List<PropertyMeta> properties = new ArrayList<>();
@@ -71,7 +69,7 @@ class SimpleQueryBeanWriter {
   private String shortName;
   private String origShortName;
 
-  private Writer writer;
+  private Append writer;
 
   SimpleQueryBeanWriter(TypeElement element, ProcessingContext processingContext) {
     this.langAdapter = new KotlinLangAdapter();
@@ -128,7 +126,7 @@ class SimpleQueryBeanWriter {
     gatherPropertyDetails();
 
     if (isEntity()) {
-      writer = createFileWriter();
+      writer = new Append(createFileWriter());
 
       translateKotlinImportTypes();
 
@@ -141,7 +139,6 @@ class SimpleQueryBeanWriter {
       //writeStaticAliasClass();
       writeClassEnd();
 
-      writer.flush();
       writer.close();
     }
   }
@@ -174,7 +171,7 @@ class SimpleQueryBeanWriter {
 
     prepareAssocBeanImports();
 
-    writer = createFileWriter();
+    writer = new Append(createFileWriter());
 
     writePackage();
     writeImports();
@@ -183,7 +180,6 @@ class SimpleQueryBeanWriter {
     writeConstructors();
     writeClassEnd();
 
-    writer.flush();
     writer.close();
   }
 
@@ -214,7 +210,7 @@ class SimpleQueryBeanWriter {
   /**
    * Write constructors.
    */
-  private void writeConstructors() throws IOException {
+  private void writeConstructors() {
 
     if (writingAssocBean) {
       writeAssocBeanFetch();
@@ -227,13 +223,11 @@ class SimpleQueryBeanWriter {
   /**
    * Write the constructors for 'root' type query bean.
    */
-  private void writeRootBeanConstructor() throws IOException {
-
+  private void writeRootBeanConstructor() {
     lang().rootBeanConstructor(writer, shortName);
   }
 
-  private void writeAssocBeanFetch() throws IOException {
-
+  private void writeAssocBeanFetch() {
     if (isEntity()) {
       lang().fetch(writer, origShortName);
     }
@@ -242,7 +236,7 @@ class SimpleQueryBeanWriter {
   /**
    * Write constructor for 'assoc' type query bean.
    */
-  private void writeAssocBeanConstructor() throws IOException {
+  private void writeAssocBeanConstructor() {
 
     lang().assocBeanConstructor(writer, shortName);
   }
@@ -250,74 +244,72 @@ class SimpleQueryBeanWriter {
   /**
    * Write all the fields.
    */
-  private void writeFields() throws IOException {
+  private void writeFields() {
 
     for (PropertyMeta property : properties) {
       String typeDefn = property.getTypeDefn(shortName, writingAssocBean);
       lang().fieldDefn(writer, property.getName(), typeDefn);
-      writer.append(NEWLINE);
+      writer.eol();
     }
-    writer.append(NEWLINE);
+    writer.eol();
   }
 
   /**
    * Write the class definition.
    */
-  private void writeClass() throws IOException {
+  private void writeClass() {
 
     if (writingAssocBean) {
-      writer.append("/**").append(NEWLINE);
-      writer.append(" * Association query bean for ").append(shortName).append(".").append(NEWLINE);
-      writer.append(" * ").append(NEWLINE);
-      writer.append(" * THIS IS A GENERATED OBJECT, DO NOT MODIFY THIS CLASS.").append(NEWLINE);
-      writer.append(" */").append(NEWLINE);
-      //public class QAssocContact<R>
+      writer.append("/**").eol();
+      writer.append(" * Association query bean for %s.", shortName).eol();
+      writer.append(" * ").eol();
+      writer.append(" * THIS IS A GENERATED OBJECT, DO NOT MODIFY THIS CLASS.").eol();
+      writer.append(" */").eol();
       if (processingContext.isGeneratedAvailable()) {
-        writer.append(AT_GENERATED).append(NEWLINE);
+        writer.append(AT_GENERATED).eol();
       }
-      writer.append(AT_TYPEQUERYBEAN).append(NEWLINE);
+      writer.append(AT_TYPEQUERYBEAN).eol();
       lang().beginAssocClass(writer, shortName, origShortName);
 
     } else {
-      writer.append("/**").append(NEWLINE);
-      writer.append(" * Query bean for ").append(shortName).append(".").append(NEWLINE);
-      writer.append(" * ").append(NEWLINE);
-      writer.append(" * THIS IS A GENERATED OBJECT, DO NOT MODIFY THIS CLASS.").append(NEWLINE);
-      writer.append(" */").append(NEWLINE);
-      //  public class QContact extends TQRootBean<Contact,QContact> {
+      writer.append("/**").eol();
+      writer.append(" * Query bean for %s.", shortName).eol();
+      writer.append(" * ").eol();
+      writer.append(" * THIS IS A GENERATED OBJECT, DO NOT MODIFY THIS CLASS.").eol();
+      writer.append(" */").eol();
       if (processingContext.isGeneratedAvailable()) {
-        writer.append(AT_GENERATED).append(NEWLINE);
+        writer.append(AT_GENERATED).eol();
       }
-      writer.append(AT_TYPEQUERYBEAN).append(NEWLINE);
+      writer.append(AT_TYPEQUERYBEAN).eol();
       lang().beginClass(writer, shortName);
     }
 
-    writer.append(NEWLINE);
+    writer.eol();
   }
 
-  private void writeAlias() throws IOException {
+  private void writeAlias() {
     if (!writingAssocBean) {
       lang().alias(writer, shortName);
     }
   }
 
-  private void writeClassEnd() throws IOException {
-    writer.append("}").append(NEWLINE);
+  private void writeClassEnd() {
+    writer.append("}").eol();
   }
 
   /**
    * Write all the imports.
    */
-  private void writeImports() throws IOException {
+  private void writeImports() {
 
     for (String importType : importTypes) {
-      writer.append("import ").append(importType).append(";").append(NEWLINE);
+      writer.append("import %s;", importType).eol();
     }
-    writer.append(NEWLINE);
+    writer.eol();
   }
 
-  private void writePackage() throws IOException {
-    writer.append("package ").append(destPackage).append(";").append(NEWLINE).append(NEWLINE);
+  private void writePackage(){
+    writer.append("package %s;", destPackage).eol().eol();
   }
 
   private Writer createFileWriter() throws IOException {

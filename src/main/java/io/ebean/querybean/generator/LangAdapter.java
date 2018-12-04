@@ -1,24 +1,19 @@
 package io.ebean.querybean.generator;
 
-import java.io.IOException;
-import java.io.Writer;
-
 public interface LangAdapter {
 
-  String NEWLINE = "\n";
+  void beginClass(Append writer, String shortName);
 
-  void beginClass(Writer writer, String shortName) throws IOException;
+  void beginAssocClass(Append writer, String shortName, String origShortName);
 
-  void beginAssocClass(Writer writer, String shortName, String origShortName) throws IOException;
+  void alias(Append writer, String shortName);
 
-  void alias(Writer writer, String shortName) throws IOException;
+  void rootBeanConstructor(Append writer, String shortName);
 
-  void rootBeanConstructor(Writer writer, String shortName) throws IOException;
+  void assocBeanConstructor(Append writer, String shortName);
 
-  void assocBeanConstructor(Writer writer, String shortName) throws IOException;
+  void fetch(Append writer, String origShortName);
 
-  void fetch(Writer writer, String origShortName) throws IOException;
-
-  void fieldDefn(Writer writer, String propertyName, String typeDefn) throws IOException;
+  void fieldDefn(Append writer, String propertyName, String typeDefn);
 
 }
