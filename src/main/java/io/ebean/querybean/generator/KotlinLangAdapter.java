@@ -58,12 +58,12 @@ class KotlinLangAdapter implements LangAdapter {
 
     writer.eol();
     writer.append("  /**").eol();
-    writer.append("   * Construct with a given EbeanServer.").eol();
+    writer.append("   * Construct with a given Database.").eol();
     writer.append("   */").eol();
-    writer.append("  constructor(server: EbeanServer) : super(%s::class.java, server)", shortName).eol().eol();
+    writer.append("  constructor(database: Database) : super(%s::class.java, database)", shortName).eol().eol();
 
     writer.append("  /**").eol();
-    writer.append("   * Construct using the default EbeanServer.").eol();
+    writer.append("   * Construct using the default Database.").eol();
     writer.append("   */").eol();
     writer.append("  constructor() : super(%s::class.java)", shortName).eol().eol();
 
