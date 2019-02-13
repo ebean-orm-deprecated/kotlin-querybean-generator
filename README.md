@@ -6,4 +6,4 @@ rather than Java public fields. This limits the query bean enhancement to just t
 where as with java query beans we need to enhance callers (as we are effectively simulating 'properties'
 via java public fields and enhancement).
 
-Refer to the documentation at: http://ebean-orm.github.io/docs/query/typesafe
+Refer to the documentation at: https://ebean.io/docs/query/query-beans
