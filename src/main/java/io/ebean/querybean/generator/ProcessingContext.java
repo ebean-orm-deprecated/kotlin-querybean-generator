@@ -22,8 +22,8 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.MappedSuperclass;
 import javax.tools.Diagnostic;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -56,6 +56,23 @@ class ProcessingContext {
 
   private boolean isTypeAvailable(String canonicalName) {
     return null != elementUtils.getTypeElement(canonicalName);
+  }
+
+  /**
+   * Find the annotation searching the inheritance hierarchy.
+   */
+  <A extends Annotation> A findAnnotation(TypeElement element, Class<A> anno) {
+
+    final A annotation = element.getAnnotation(anno);
+    if (annotation != null) {
+      return annotation;
+    }
+    final TypeMirror typeMirror = element.getSuperclass();
+    if (typeMirror.getKind() == TypeKind.NONE) {
+      return null;
+    }
+    final TypeElement element1 = (TypeElement)typeUtils.asElement(typeMirror);
+    return findAnnotation(element1, anno);
   }
 
   /**

@@ -8,7 +8,7 @@ public interface LangAdapter {
 
   void alias(Append writer, String shortName);
 
-  void rootBeanConstructor(Append writer, String shortName);
+  void rootBeanConstructor(Append writer, String shortName, String dbName);
 
   void assocBeanConstructor(Append writer, String shortName);
 

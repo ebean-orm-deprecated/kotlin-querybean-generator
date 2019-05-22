@@ -1,6 +1,8 @@
 package io.ebean.querybean.generator;
 
 
+import io.ebean.annotation.DbName;
+
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.persistence.Entity;
@@ -17,7 +19,10 @@ import java.util.TreeSet;
 import static io.ebean.querybean.generator.Constants.AT_GENERATED;
 import static io.ebean.querybean.generator.Constants.AT_TYPEQUERYBEAN;
 import static io.ebean.querybean.generator.Constants.DATABASE;
+import static io.ebean.querybean.generator.Constants.DB;
 import static io.ebean.querybean.generator.Constants.GENERATED;
+import static io.ebean.querybean.generator.Constants.TQASSOCBEAN;
+import static io.ebean.querybean.generator.Constants.TQPROPERTY;
 import static io.ebean.querybean.generator.Constants.TQROOTBEAN;
 import static io.ebean.querybean.generator.Constants.TYPEQUERYBEAN;
 
@@ -58,6 +63,7 @@ class SimpleQueryBeanWriter {
 
   private final ProcessingContext processingContext;
 
+  private final String dbName;
   private final String beanFullName;
   private final LangAdapter langAdapter;
   private boolean writingAssocBean;
@@ -77,6 +83,8 @@ class SimpleQueryBeanWriter {
     this.element = element;
     this.processingContext = processingContext;
 
+    DbName name = processingContext.findAnnotation(element, DbName.class);
+    this.dbName = (name == null) ? null : name.value();
     this.beanFullName = element.getQualifiedName().toString();
     this.destPackage = derivePackage(beanFullName) + ".query";
     this.shortName = deriveShortName(beanFullName);
@@ -95,7 +103,9 @@ class SimpleQueryBeanWriter {
     importTypes.add(TQROOTBEAN);
     importTypes.add(TYPEQUERYBEAN);
     importTypes.add(DATABASE);
-
+    if (dbName != null) {
+      importTypes.add(DB);
+    }
     addClassProperties();
   }
 
@@ -188,11 +198,12 @@ class SimpleQueryBeanWriter {
    */
   private void prepareAssocBeanImports() {
 
-    importTypes.remove("io.ebean.typequery.TQRootBean");
-    importTypes.remove("io.ebean.Database");
-    importTypes.add("io.ebean.typequery.TQAssocBean");
+    importTypes.remove(DB);
+    importTypes.remove(TQROOTBEAN);
+    importTypes.remove(DATABASE);
+    importTypes.add(TQASSOCBEAN);
     if (isEntity()) {
-      importTypes.add("io.ebean.typequery.TQProperty");
+      importTypes.add(TQPROPERTY);
       importTypes.add(origDestPackage + ".Q" + origShortName);
     }
 
@@ -224,7 +235,7 @@ class SimpleQueryBeanWriter {
    * Write the constructors for 'root' type query bean.
    */
   private void writeRootBeanConstructor() {
-    lang().rootBeanConstructor(writer, shortName);
+    lang().rootBeanConstructor(writer, shortName, dbName);
   }
 
   private void writeAssocBeanFetch() {

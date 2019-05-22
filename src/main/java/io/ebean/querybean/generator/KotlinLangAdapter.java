@@ -26,7 +26,9 @@ class KotlinLangAdapter implements LangAdapter {
 
   @Override
   public void assocBeanConstructor(Append writer, String shortName) {
-    // not required for kotlin as part of type definition
+
+    // additionally constructor with prefix parameter
+    writer.append("  constructor(name: String, root: R, prefix: String) : super(name, root, prefix) {}").eol();
   }
 
   @Override
@@ -54,7 +56,9 @@ class KotlinLangAdapter implements LangAdapter {
 
 
   @Override
-  public void rootBeanConstructor(Append writer, String shortName) {
+  public void rootBeanConstructor(Append writer, String shortName, String dbName) {
+
+    String name = (dbName == null) ? "default" : dbName;
 
     writer.eol();
     writer.append("  /**").eol();
@@ -63,10 +67,13 @@ class KotlinLangAdapter implements LangAdapter {
     writer.append("  constructor(database: Database) : super(%s::class.java, database)", shortName).eol().eol();
 
     writer.append("  /**").eol();
-    writer.append("   * Construct using the default Database.").eol();
+    writer.append("   * Construct using the %s Database.", name).eol();
     writer.append("   */").eol();
-    writer.append("  constructor() : super(%s::class.java)", shortName).eol().eol();
-
+    if (dbName == null) {
+      writer.append("  constructor() : super(%s::class.java)", shortName).eol().eol();
+    } else {
+      writer.append("  constructor() : super(%s::class.java, DB.byName(\"%s\"))", shortName, dbName).eol().eol();
+    }
     writer.append("  /**").eol();
     writer.append("   * Construct for Alias.").eol();
     writer.append("   */").eol();
