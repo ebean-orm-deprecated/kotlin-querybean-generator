@@ -9,7 +9,7 @@ class KotlinLangAdapter implements LangAdapter {
 
   @Override
   public void beginAssocClass(Append writer, String shortName, String origShortName) {
-    writer.append("class Q%s<R>(name: String, root: R) : TQAssocBean<%s,R>(name, root) {", shortName, origShortName).eol();
+    writer.append("class Q%s<R> : TQAssocBean<%s,R> {", shortName, origShortName).eol();
   }
 
   @Override
@@ -27,8 +27,9 @@ class KotlinLangAdapter implements LangAdapter {
   @Override
   public void assocBeanConstructor(Append writer, String shortName) {
 
-    // additionally constructor with prefix parameter
-    writer.append("  constructor(name: String, root: R, prefix: String) : super(name, root, prefix) {}").eol();
+    writer.append("  constructor(name: String, root: R) : super(name, root)").eol();
+    writer.eol();
+    writer.append("  constructor(name: String, root: R, prefix: String) : super(name, root, prefix)").eol();
   }
 
   @Override
