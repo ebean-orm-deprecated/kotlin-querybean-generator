@@ -6,6 +6,7 @@ import io.ebean.annotation.DbJsonB;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -27,12 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static io.ebean.querybean.generator.Constants.GENERATED;
-
 /**
  * Context for the source generation.
  */
-class ProcessingContext {
+class ProcessingContext implements Constants {
 
   private final String generatedSources;
 
@@ -42,7 +41,7 @@ class ProcessingContext {
 
   private final Elements elementUtils;
 
-  private final boolean generatedAvailable;
+  private final String generatedAnnotation;
 
   private final PropertyTypeMap propertyTypeMap = new PropertyTypeMap();
 
@@ -51,7 +50,15 @@ class ProcessingContext {
     this.typeUtils = processingEnv.getTypeUtils();
     this.messager = processingEnv.getMessager();
     this.elementUtils = processingEnv.getElementUtils();
-    this.generatedAvailable = isTypeAvailable(GENERATED);
+    boolean jdk8 = processingEnv.getSourceVersion().compareTo(SourceVersion.RELEASE_8) <= 0;
+    this.generatedAnnotation = generatedAnnotation(jdk8);
+  }
+
+  private String generatedAnnotation(boolean jdk8) {
+    if (jdk8) {
+      return isTypeAvailable(GENERATED_8) ? GENERATED_8 : null;
+    }
+    return isTypeAvailable(GENERATED_9) ? GENERATED_9 : null;
   }
 
   private boolean isTypeAvailable(String canonicalName) {
@@ -270,10 +277,11 @@ class ProcessingContext {
     messager.printMessage(Diagnostic.Kind.NOTE, String.format(msg, args));
   }
 
-  /**
-   * Return true if javax.annotation.Generated is available in the claspath.
-   */
   boolean isGeneratedAvailable() {
-    return generatedAvailable;
+    return generatedAnnotation != null;
+  }
+
+  String getGeneratedAnnotation() {
+    return generatedAnnotation;
   }
 }

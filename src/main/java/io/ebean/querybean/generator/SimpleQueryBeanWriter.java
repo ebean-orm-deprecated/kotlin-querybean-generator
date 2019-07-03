@@ -20,7 +20,6 @@ import static io.ebean.querybean.generator.Constants.AT_GENERATED;
 import static io.ebean.querybean.generator.Constants.AT_TYPEQUERYBEAN;
 import static io.ebean.querybean.generator.Constants.DATABASE;
 import static io.ebean.querybean.generator.Constants.DB;
-import static io.ebean.querybean.generator.Constants.GENERATED;
 import static io.ebean.querybean.generator.Constants.TQASSOCBEAN;
 import static io.ebean.querybean.generator.Constants.TQPROPERTY;
 import static io.ebean.querybean.generator.Constants.TQROOTBEAN;
@@ -96,10 +95,11 @@ class SimpleQueryBeanWriter {
 
   private void gatherPropertyDetails() {
 
-    importTypes.add(beanFullName);
-    if (processingContext.isGeneratedAvailable()) {
-      importTypes.add(GENERATED);
+    final String generated = processingContext.getGeneratedAnnotation();
+    if (generated != null) {
+      importTypes.add(generated);
     }
+    importTypes.add(beanFullName);
     importTypes.add(TQROOTBEAN);
     importTypes.add(TYPEQUERYBEAN);
     importTypes.add(DATABASE);

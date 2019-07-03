@@ -1,16 +1,17 @@
 package io.ebean.querybean.generator;
 
-class Constants {
+interface Constants {
 
-  static final String AT_GENERATED = "@Generated(\"io.ebean.querybean.kotlin-generator\")";
+  String AT_GENERATED = "@Generated(\"io.ebean.querybean.kotlin-generator\")";
 
-  static final String AT_TYPEQUERYBEAN = "@TypeQueryBean";
+  String AT_TYPEQUERYBEAN = "@TypeQueryBean";
 
-  static final String GENERATED = "javax.annotation.Generated";
-  static final String TQROOTBEAN = "io.ebean.typequery.TQRootBean";
-  static final String TQASSOCBEAN = "io.ebean.typequery.TQAssocBean";
-  static final String TQPROPERTY = "io.ebean.typequery.TQProperty";
-  static final String TYPEQUERYBEAN = "io.ebean.typequery.TypeQueryBean";
-  static final String DATABASE = "io.ebean.Database";
-  static final String DB = "io.ebean.DB";
+  String GENERATED_9 = "javax.annotation.processing.Generated";
+  String GENERATED_8 = "javax.annotation.Generated";
+  String TQROOTBEAN = "io.ebean.typequery.TQRootBean";
+  String TQASSOCBEAN = "io.ebean.typequery.TQAssocBean";
+  String TQPROPERTY = "io.ebean.typequery.TQProperty";
+  String TYPEQUERYBEAN = "io.ebean.typequery.TypeQueryBean";
+  String DATABASE = "io.ebean.Database";
+  String DB = "io.ebean.DB";
 }
