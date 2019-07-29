@@ -1,11 +1,8 @@
 package io.ebean.querybean.generator;
 
 
-import io.ebean.annotation.DbName;
-
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.persistence.Entity;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -62,6 +59,7 @@ class SimpleQueryBeanWriter {
 
   private final ProcessingContext processingContext;
 
+  private final boolean isEntity;
   private final String dbName;
   private final String beanFullName;
   private final LangAdapter langAdapter;
@@ -81,12 +79,15 @@ class SimpleQueryBeanWriter {
     this.generatedSourcesDir = processingContext.generatedSourcesDir();
     this.element = element;
     this.processingContext = processingContext;
-
-    DbName name = processingContext.findAnnotation(element, DbName.class);
-    this.dbName = (name == null) ? null : name.value();
     this.beanFullName = element.getQualifiedName().toString();
     this.destPackage = derivePackage(beanFullName) + ".query";
     this.shortName = deriveShortName(beanFullName);
+    this.isEntity = processingContext.isEntity(element);
+    this.dbName = findDbName();
+  }
+
+  private String findDbName() {
+    return FindDbName.value(element);
   }
 
   private LangAdapter lang() {
@@ -165,7 +166,7 @@ class SimpleQueryBeanWriter {
   }
 
   private boolean isEntity() {
-    return element.getAnnotation(Entity.class) != null;
+    return isEntity;
   }
 
   /**

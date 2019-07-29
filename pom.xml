@@ -19,14 +19,6 @@
 
   <dependencies>
 
-    <!-- Look for DbJson annotations -->
-    <dependency>
-      <groupId>io.ebean</groupId>
-      <artifactId>ebean</artifactId>
-      <version>11.41.1</version>
-      <scope>provided</scope>
-    </dependency>
-
     <dependency>
       <groupId>org.avaje.composite</groupId>
       <artifactId>composite-testing</artifactId>
