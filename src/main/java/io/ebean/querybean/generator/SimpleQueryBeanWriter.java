@@ -17,6 +17,8 @@ import static io.ebean.querybean.generator.Constants.AT_GENERATED;
 import static io.ebean.querybean.generator.Constants.AT_TYPEQUERYBEAN;
 import static io.ebean.querybean.generator.Constants.DATABASE;
 import static io.ebean.querybean.generator.Constants.DB;
+import static io.ebean.querybean.generator.Constants.FETCHGROUP;
+import static io.ebean.querybean.generator.Constants.QUERY;
 import static io.ebean.querybean.generator.Constants.TQASSOCBEAN;
 import static io.ebean.querybean.generator.Constants.TQPROPERTY;
 import static io.ebean.querybean.generator.Constants.TQROOTBEAN;
@@ -104,6 +106,8 @@ class SimpleQueryBeanWriter {
     importTypes.add(TQROOTBEAN);
     importTypes.add(TYPEQUERYBEAN);
     importTypes.add(DATABASE);
+    importTypes.add(FETCHGROUP);
+    importTypes.add(QUERY);
     if (dbName != null) {
       importTypes.add(DB);
     }
@@ -202,6 +206,8 @@ class SimpleQueryBeanWriter {
     importTypes.remove(DB);
     importTypes.remove(TQROOTBEAN);
     importTypes.remove(DATABASE);
+    importTypes.remove(FETCHGROUP);
+    importTypes.remove(QUERY);
     importTypes.add(TQASSOCBEAN);
     if (isEntity()) {
       importTypes.add(TQPROPERTY);

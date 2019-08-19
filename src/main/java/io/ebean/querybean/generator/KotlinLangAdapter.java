@@ -21,6 +21,13 @@ class KotlinLangAdapter implements LangAdapter {
     writer.append("     * properties to select and fetch clauses").eol();
     writer.append("     */").eol();
     writer.append("    val _alias = Q").append(shortName).append("(true)").eol();
+    writer.eol();
+    writer.append("    /**").eol();
+    writer.append("     * Return a query bean used to build a FetchGroup.").eol();
+    writer.append("     */").eol();
+    writer.append("    fun forFetchGroup(): Q%s {", shortName).eol();
+    writer.append("      return Q%s(FetchGroup.queryFor(%s::class.java));", shortName, shortName).eol();
+    writer.append("    }").eol();
     writer.append("  }").eol().eol();
   }
 
@@ -78,7 +85,12 @@ class KotlinLangAdapter implements LangAdapter {
     writer.append("  /**").eol();
     writer.append("   * Construct for Alias.").eol();
     writer.append("   */").eol();
-    writer.append("  private constructor(dummy: Boolean) : super(dummy)").eol();
+    writer.append("  private constructor(dummy: Boolean) : super(dummy)").eol().eol();
+
+    writer.append("  /**").eol();
+    writer.append("   * Private constructor for FetchGroup building.").eol();
+    writer.append("   */").eol();
+    writer.append("  private constructor(fetchGroupQuery: Query<%s>) : super(fetchGroupQuery)", shortName).eol();
   }
 
   @Override
