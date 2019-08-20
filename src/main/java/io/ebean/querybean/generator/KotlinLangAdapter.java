@@ -44,6 +44,7 @@ class KotlinLangAdapter implements LangAdapter {
 
     writeAssocBeanFetch(writer, origShortName, "", "Eagerly fetch this association loading the specified properties.");
     writeAssocBeanFetch(writer, origShortName, "Query", "Eagerly fetch this association using a 'query join' loading the specified properties.");
+    writeAssocBeanFetch(writer, origShortName, "Cache", "Eagerly fetch this association using L2 cache.");
     writeAssocBeanFetch(writer, origShortName, "Lazy", "Use lazy loading for this association loading the specified properties.");
   }
 
