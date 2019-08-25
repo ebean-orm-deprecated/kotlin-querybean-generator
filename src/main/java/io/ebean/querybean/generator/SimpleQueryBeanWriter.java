@@ -326,7 +326,7 @@ class SimpleQueryBeanWriter {
     writer.eol();
   }
 
-  private void writePackage(){
+  private void writePackage() {
     writer.append("package %s;", destPackage).eol().eol();
   }
 
