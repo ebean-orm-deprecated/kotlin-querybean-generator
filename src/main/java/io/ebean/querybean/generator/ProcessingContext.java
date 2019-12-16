@@ -265,33 +265,33 @@ class ProcessingContext implements Constants {
     }
 
     Element fieldType = typeUtils.asElement(typeMirror);
+    if (fieldType == null) {
+      return null;
+    }
+    // workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=544288
+    fieldType = elementUtils.getTypeElement(fieldType.toString());
 
-    if (fieldType != null) {
-      // workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=544288
-      fieldType = elementUtils.getTypeElement(fieldType.toString());
+    if (fieldType.getKind() == ElementKind.ENUM) {
+      String fullType = typeDef(typeMirror);
+      return new PropertyTypeEnum(fullType, Split.shortName(fullType));
+    }
 
-      if (fieldType.getKind() == ElementKind.ENUM) {
-        String fullType = typeDef(typeMirror);
-        return new PropertyTypeEnum(fullType, Split.shortName(fullType));
-      }
+    if (isEntityOrEmbedded(fieldType)) {
+      //  public QAssocContact<QCustomer> contacts;
+      return createPropertyTypeAssoc(typeDef(typeMirror));
+    }
 
-      if (isEntityOrEmbedded(fieldType)) {
-        //  public QAssocContact<QCustomer> contacts;
-        return createPropertyTypeAssoc(typeDef(typeMirror));
-      }
-
-      if (typeMirror.getKind() == TypeKind.DECLARED) {
-        DeclaredType declaredType = (DeclaredType) typeMirror;
-        List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
-        if (typeArguments.size() == 1) {
-          TypeMirror argType = typeArguments.get(0);
-          if (argType.getKind() == TypeKind.WILDCARD) {
-            argType = ((WildcardType) argType).getExtendsBound();
-          }
-          Element argElement = typeUtils.asElement(argType);
-          if (isEntityOrEmbedded(argElement)) {
-            return createPropertyTypeAssoc(typeDef(argElement.asType()));
-          }
+    if (typeMirror.getKind() == TypeKind.DECLARED) {
+      DeclaredType declaredType = (DeclaredType) typeMirror;
+      List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
+      if (typeArguments.size() == 1) {
+        TypeMirror argType = typeArguments.get(0);
+        if (argType.getKind() == TypeKind.WILDCARD) {
+          argType = ((WildcardType) argType).getExtendsBound();
+        }
+        Element argElement = typeUtils.asElement(argType);
+        if (isEntityOrEmbedded(argElement)) {
+          return createPropertyTypeAssoc(typeDef(argElement.asType()));
         }
       }
     }
