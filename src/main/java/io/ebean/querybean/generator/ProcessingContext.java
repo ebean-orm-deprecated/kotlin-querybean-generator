@@ -360,8 +360,8 @@ class ProcessingContext implements Constants {
   /**
    * Create a file writer for the given class name.
    */
-  JavaFileObject createWriter(String factoryClassName, Element originatingElement) throws IOException {
-    return filer.createSourceFile(factoryClassName, originatingElement);
+  JavaFileObject createWriter(String factoryClassName) throws IOException {
+    return filer.createSourceFile(factoryClassName);
   }
 
   void logError(Element e, String msg, Object... args) {

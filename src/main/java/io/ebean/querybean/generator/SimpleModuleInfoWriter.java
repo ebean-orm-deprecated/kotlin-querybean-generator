@@ -171,7 +171,7 @@ class SimpleModuleInfoWriter {
   }
 
   private Writer createFileWriter() throws IOException {
-    JavaFileObject jfo = processingContext.createWriter(factoryFullName, null);
+    JavaFileObject jfo = processingContext.createWriter(factoryFullName);
     return jfo.openWriter();
   }
 }
