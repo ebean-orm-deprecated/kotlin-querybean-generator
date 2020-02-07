@@ -4,7 +4,7 @@ interface Constants {
 
   String AT_GENERATED = "@Generated(\"io.ebean.querybean.kotlin-generator\")";
 
-  String AT_TYPEQUERYBEAN = "@TypeQueryBean";
+  String AT_TYPEQUERYBEAN = "@TypeQueryBean(\"v1\")";
 
   String GENERATED_9 = "javax.annotation.processing.Generated";
   String GENERATED_8 = "javax.annotation.Generated";
