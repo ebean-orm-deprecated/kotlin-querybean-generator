@@ -22,6 +22,7 @@ import static io.ebean.querybean.generator.Constants.QUERY;
 import static io.ebean.querybean.generator.Constants.TQASSOCBEAN;
 import static io.ebean.querybean.generator.Constants.TQPROPERTY;
 import static io.ebean.querybean.generator.Constants.TQROOTBEAN;
+import static io.ebean.querybean.generator.Constants.TRANSACTION;
 import static io.ebean.querybean.generator.Constants.TYPEQUERYBEAN;
 
 /**
@@ -108,6 +109,7 @@ class SimpleQueryBeanWriter {
     importTypes.add(DATABASE);
     importTypes.add(FETCHGROUP);
     importTypes.add(QUERY);
+    importTypes.add(TRANSACTION);
     if (dbName != null) {
       importTypes.add(DB);
     }

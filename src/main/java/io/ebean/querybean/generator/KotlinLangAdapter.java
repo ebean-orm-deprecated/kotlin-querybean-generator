@@ -69,12 +69,6 @@ class KotlinLangAdapter implements LangAdapter {
 
     String name = (dbName == null) ? "default" : dbName;
 
-    writer.eol();
-    writer.append("  /**").eol();
-    writer.append("   * Construct with a given Database.").eol();
-    writer.append("   */").eol();
-    writer.append("  constructor(database: Database) : super(%s::class.java, database)", shortName).eol().eol();
-
     writer.append("  /**").eol();
     writer.append("   * Construct using the %s Database.", name).eol();
     writer.append("   */").eol();
@@ -83,6 +77,22 @@ class KotlinLangAdapter implements LangAdapter {
     } else {
       writer.append("  constructor() : super(%s::class.java, DB.byName(\"%s\"))", shortName, dbName).eol().eol();
     }
+
+    writer.append("  /**").eol();
+    writer.append("   * Construct with a given Transaction.", name).eol();
+    writer.append("   */").eol();
+    if (dbName == null) {
+      writer.append("  constructor(transaction: Transaction) : super(%s::class.java, transaction)", shortName).eol().eol();
+    } else {
+      writer.append("  constructor(transaction: Transaction) : super(%s::class.java, DB.byName(\"%s\"), transaction)", shortName, dbName).eol().eol();
+    }
+
+    writer.eol();
+    writer.append("  /**").eol();
+    writer.append("   * Construct with a given Database.").eol();
+    writer.append("   */").eol();
+    writer.append("  constructor(database: Database) : super(%s::class.java, database)", shortName).eol().eol();
+
     writer.append("  /**").eol();
     writer.append("   * Construct for Alias.").eol();
     writer.append("   */").eol();
