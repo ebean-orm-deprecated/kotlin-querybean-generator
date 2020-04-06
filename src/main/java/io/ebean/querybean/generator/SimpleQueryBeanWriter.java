@@ -51,6 +51,7 @@ class SimpleQueryBeanWriter {
   private final ProcessingContext processingContext;
 
   private final boolean isEntity;
+  private final boolean embeddable;
   private final String dbName;
   private final String beanFullName;
   private final LangAdapter langAdapter;
@@ -74,6 +75,7 @@ class SimpleQueryBeanWriter {
     this.destPackage = derivePackage(beanFullName) + ".query";
     this.shortName = deriveShortName(beanFullName);
     this.isEntity = processingContext.isEntity(element);
+    this.embeddable = processingContext.isEmbeddable(element);
     this.dbName = findDbName();
   }
 
@@ -130,7 +132,9 @@ class SimpleQueryBeanWriter {
 
     gatherPropertyDetails();
 
-    if (isEntity()) {
+    if (isEmbeddable()) {
+      processingContext.addEntity(beanFullName, dbName);
+    } else if (isEntity()) {
       processingContext.addEntity(beanFullName, dbName);
       writer = new Append(createFileWriter());
 
@@ -162,6 +166,10 @@ class SimpleQueryBeanWriter {
 
   private boolean isEntity() {
     return isEntity;
+  }
+
+  private boolean isEmbeddable() {
+    return embeddable;
   }
 
   /**
