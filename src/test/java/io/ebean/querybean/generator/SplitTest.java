@@ -8,14 +8,19 @@ import static org.testng.Assert.assertNull;
 public class SplitTest {
 
   @Test
-  public void shortName() throws Exception {
+  public void trimType() {
+    assertEquals(Split.trimType("com.foo.domain.Customer"), "com.foo.domain.Customer");
+    assertEquals(Split.trimType("? extends com.foo.domain.Customer"), "com.foo.domain.Customer");
+  }
 
+  @Test
+  public void shortName() {
     assertEquals(Split.shortName("com.foo.domain.Customer"), "Customer");
     assertEquals(Split.shortName("Customer"), "Customer");
   }
 
   @Test
-  public void split_normal() throws Exception {
+  public void split_normal() {
 
     String[] split = Split.split("com.foo.domain.Customer");
 
@@ -24,7 +29,7 @@ public class SplitTest {
   }
 
   @Test
-  public void split_noPackage() throws Exception {
+  public void split_noPackage() {
 
     String[] split = Split.split("Customer");
 

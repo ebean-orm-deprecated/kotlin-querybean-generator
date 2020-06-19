@@ -132,9 +132,9 @@ class ProcessingContext implements Constants {
   private String typeDef(TypeMirror typeMirror) {
     if (typeMirror.getKind() == TypeKind.DECLARED) {
       DeclaredType declaredType = (DeclaredType) typeMirror;
-      return declaredType.asElement().toString();
+      return Split.trimType(declaredType.asElement().toString());
     } else {
-      return typeMirror.toString();
+      return Split.trimType(typeMirror.toString());
     }
   }
 

@@ -31,4 +31,14 @@ class Split {
     return className.substring(startPos + 1);
   }
 
+  /**
+   * Trim "? extends" from a Kotlin "out" collection type.
+   */
+  static String trimType(String fullType) {
+    if (fullType.startsWith("? ")) {
+      return fullType.substring(10);
+    }
+    return fullType;
+  }
+
 }
