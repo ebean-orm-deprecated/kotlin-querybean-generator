@@ -60,6 +60,8 @@ class ProcessingContext implements Constants {
    */
   private final Set<String> allEntityPackages = new TreeSet<>();
 
+  private final Set<String> otherClasses = new TreeSet<>();
+
   /**
    * The DB name prefixed entities.
    */
@@ -83,7 +85,7 @@ class ProcessingContext implements Constants {
   /**
    * For partial compile the previous list of prefixed entity classes.
    */
-  private List<String> loadedPrefixEntities;
+  private List<String> loadedPrefixEntities = new ArrayList<>(); ;
 
   /**
    * The package for the generated ModuleInfoLoader.
@@ -101,6 +103,18 @@ class ProcessingContext implements Constants {
     this.generatedAnnotation = generatedAnnotation(jdk8);
     this.generatedSources = initGeneratedSources(processingEnv);
     this.readModuleInfo = new ReadModuleInfo(this);
+  }
+
+  TypeElement entityAnnotation() {
+    return elementUtils.getTypeElement(ENTITY);
+  }
+
+  TypeElement embeddableAnnotation() {
+    return elementUtils.getTypeElement(EMBEDDABLE);
+  }
+
+  TypeElement converterAnnotation() {
+    return elementUtils.getTypeElement(CONVERTER);
   }
 
   private String generatedAnnotation(boolean jdk8) {
@@ -142,7 +156,6 @@ class ProcessingContext implements Constants {
    * Gather all the fields (properties) for the given bean element.
    */
   List<VariableElement> allFields(Element element) {
-
     List<VariableElement> list = new ArrayList<>();
     gatherProperties(list, element);
     return list;
@@ -392,7 +405,9 @@ class ProcessingContext implements Constants {
       TypeElement factoryType = elementUtils.getTypeElement(factory);
       if (factoryType != null) {
         // previous prefixed entities to add back for partial compile
-        loadedPrefixEntities = readModuleInfo.read(factoryType);
+        final ModuleMeta read = readModuleInfo.read(factoryType);
+        loadedPrefixEntities.addAll(read.getEntities());
+        otherClasses.addAll(read.getOther());
       }
     }
   }
@@ -421,25 +436,22 @@ class ProcessingContext implements Constants {
    * Add back entity classes for partial compile.
    */
   int complete() {
-
     int added = 0;
-    if (loadedPrefixEntities != null) {
-      for (String oldPrefixEntity : loadedPrefixEntities) {
-        // maybe split as dbName:entityClass
-        final String[] prefixEntityClass = oldPrefixEntity.split(":");
+    for (String oldPrefixEntity : loadedPrefixEntities) {
+      // maybe split as dbName:entityClass
+      final String[] prefixEntityClass = oldPrefixEntity.split(":");
 
-        String dbName = null;
-        String entityClass;
-        if (prefixEntityClass.length > 1) {
-          dbName = prefixEntityClass[0];
-          entityClass = prefixEntityClass[1];
-        } else {
-          entityClass = prefixEntityClass[0];
-        }
-        if (!loaded.contains(entityClass)) {
-          addEntity(entityClass, dbName);
-          added++;
-        }
+      String dbName = null;
+      String entityClass;
+      if (prefixEntityClass.length > 1) {
+        dbName = prefixEntityClass[0];
+        entityClass = prefixEntityClass[1];
+      } else {
+        entityClass = prefixEntityClass[0];
+      }
+      if (!loaded.contains(entityClass)) {
+        addEntity(entityClass, dbName);
+        added++;
       }
     }
     return added;
@@ -469,6 +481,18 @@ class ProcessingContext implements Constants {
 
   FileObject createMetaInfWriter(String target) throws IOException {
     return filer.createResource(StandardLocation.CLASS_OUTPUT, "", target);
+  }
+
+  boolean hasOtherClasses() {
+    return !otherClasses.isEmpty();
+  }
+
+  Set<String> getOtherClasses() {
+    return otherClasses;
+  }
+
+  void addOther(Element element) {
+    otherClasses.add(element.toString());
   }
 
   Set<String> getPrefixEntities() {

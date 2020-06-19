@@ -39,10 +39,10 @@ public class Processor extends AbstractProcessor implements Constants {
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
-
     Set<String> annotations = new LinkedHashSet<>();
     annotations.add(ENTITY);
     annotations.add(EMBEDDABLE);
+    annotations.add(CONVERTER);
     annotations.add(MODULEINFO);
     return annotations;
   }
@@ -56,24 +56,36 @@ public class Processor extends AbstractProcessor implements Constants {
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
     processingContext.readModuleInfo();
-    int count = 0;
-    for (TypeElement annotation : annotations) {
-      for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
-        generateQueryBeans(element);
-        count++;
-      }
-    }
+    int count = processEntities(roundEnv);
+    processOthers(roundEnv);
     final int loaded = processingContext.complete();
     if (roundEnv.processingOver()) {
       writeModuleInfoBean();
     }
-
     if (count > 0) {
       String msg = "Ebean APT generated %s query beans, loaded %s others - META-INF/ebean-generated-info.mf entity-packages: %s";
       processingContext.logNote(msg, count, loaded, processingContext.getAllEntityPackages());
     }
-
     return true;
+  }
+
+  private int processEntities(RoundEnvironment roundEnv) {
+    int count = 0;
+    for (Element element : roundEnv.getElementsAnnotatedWith(processingContext.embeddableAnnotation())) {
+      generateQueryBeans(element);
+      count++;
+    }
+    for (Element element : roundEnv.getElementsAnnotatedWith(processingContext.entityAnnotation())) {
+      generateQueryBeans(element);
+      count++;
+    }
+    return count;
+  }
+
+  private void processOthers(RoundEnvironment roundEnv) {
+    for (Element element : roundEnv.getElementsAnnotatedWith(processingContext.converterAnnotation())) {
+      processingContext.addOther(element);
+    }
   }
 
   private void writeModuleInfoBean() {

@@ -29,13 +29,11 @@ class SimpleModuleInfoWriter {
   }
 
   void write() throws IOException {
-
     writer = new Append(createFileWriter());
     writePackage();
     writeStartClass();
     writeEndClass();
     writer.close();
-
     writeServicesFile();
     writeManifestFile();
   }
@@ -107,13 +105,26 @@ class SimpleModuleInfoWriter {
     if (processingContext.isGeneratedAvailable()) {
       writer.append(Constants.AT_GENERATED).eol();
     }
-    writer.append("@ModuleInfo(entities={%s})", prefixEntities()).eol();
+    writer.append("@ModuleInfo(");
+    if (processingContext.hasOtherClasses()) {
+      writer.append("other={%s}, ", otherClasses());
+    }
+    writer.append("entities={%s}", prefixEntities());
+    writer.append(")").eol();
+  }
+
+  private String otherClasses() {
+    return quoteTypes(processingContext.getOtherClasses());
   }
 
   private String prefixEntities() {
+    return quoteTypes(processingContext.getPrefixEntities());
+  }
+
+  private String quoteTypes(Set<String> otherClasses) {
     StringJoiner sb = new StringJoiner(",");
-    for (String entity : processingContext.getPrefixEntities()) {
-      sb.add("\"" + entity + "\"");
+    for (String fullType : otherClasses) {
+      sb.add("\"" + fullType + "\"");
     }
     return sb.toString();
   }
@@ -123,7 +134,7 @@ class SimpleModuleInfoWriter {
     buildAtContextModule(writer);
 
     writer.append("public class %s implements ModuleInfoLoader {", factoryShortName).eol().eol();
-
+    writeMethodOtherClasses();
     writeMethodEntityClasses(processingContext.getDbEntities(), null);
 
     final Map<String, Set<String>> otherDbEntities = processingContext.getOtherDbEntities();
@@ -132,7 +143,20 @@ class SimpleModuleInfoWriter {
     for (Map.Entry<String, Set<String>> otherDb : otherDbEntities.entrySet()) {
       writeMethodEntityClasses(otherDb.getValue(), otherDb.getKey());
     }
+  }
 
+  private void writeMethodOtherClasses() {
+    writer.append("  private List<Class<?>> otherClasses() {").eol();
+    if (!processingContext.hasOtherClasses()) {
+      writer.append("    return Collections.emptyList();").eol();
+    } else {
+      writer.append("    List<Class<?>> others = new ArrayList<>();").eol();
+      for (String otherType : processingContext.getOtherClasses()) {
+        writer.append("    others.add(%s.class);", otherType).eol();
+      }
+      writer.append("    return others;").eol();
+    }
+    writer.append("  }").eol().eol();
   }
 
   private void writeMethodEntityClasses(Set<String> dbEntities, String dbName) {
@@ -150,6 +174,9 @@ class SimpleModuleInfoWriter {
     writer.append("    List<Class<?>> entities = new ArrayList<>();").eol();
     for (String dbEntity : dbEntities) {
       writer.append("    entities.add(%s.class);", dbEntity).eol();
+    }
+    if (processingContext.hasOtherClasses()) {
+      writer.append("    entities.addAll(otherClasses());").eol();
     }
     writer.append("    return entities;").eol();
     writer.append("  }").eol().eol();
