@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 /**
  * Context for the source generation.
@@ -303,6 +304,7 @@ class ProcessingContext implements Constants {
       return createPropertyTypeAssoc(typeDef(typeMirror));
     }
 
+    PropertyType result = null;
     if (typeMirror.getKind() == TypeKind.DECLARED) {
       DeclaredType declaredType = (DeclaredType) typeMirror;
       List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
@@ -313,20 +315,45 @@ class ProcessingContext implements Constants {
         }
         Element argElement = typeUtils.asElement(argType);
         if (isEntityOrEmbedded(argElement)) {
-          return createPropertyTypeAssoc(typeDef(argElement.asType()));
+          result = createPropertyTypeAssoc(typeDef(argElement.asType()));
         } else {
           // look for targetEntity annotation attribute
           final String targetEntity = readTargetEntity(field);
           if (targetEntity != null) {
             final TypeElement element = elementUtils.getTypeElement(targetEntity);
             if (isEntityOrEmbedded(element)) {
-              return createPropertyTypeAssoc(typeDef(element.asType()));
+              result = createPropertyTypeAssoc(typeDef(element.asType()));
             }
           }
         }
       }
     }
-    return null;
+
+    if (result != null) {
+      return result;
+    } else {
+      if (typeInstanceOf(typeMirror, "java.lang.Comparable")) {
+        return new PropertyTypeScalarComparable(typeDef(typeMirror));
+      } else {
+        return new PropertyTypeScalar(typeDef(typeMirror));
+      }
+    }
+  }
+
+  private boolean typeInstanceOf(final TypeMirror typeMirror, final CharSequence desiredInterface) {
+    TypeElement typeElement = (TypeElement) typeUtils.asElement(typeMirror);
+    if (typeElement == null || typeElement.getQualifiedName().contentEquals("java.lang.Object")) {
+      return false;
+    }
+    if (typeElement.getQualifiedName().contentEquals(desiredInterface)) {
+      return true;
+    }
+
+    return typeInstanceOf(typeElement.getSuperclass(), desiredInterface) ||
+      typeElement
+        .getInterfaces()
+        .stream()
+        .anyMatch(t -> typeInstanceOf(t, desiredInterface));
   }
 
   private String readTargetEntity(Element declaredType) {
